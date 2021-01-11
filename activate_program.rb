@@ -4,10 +4,8 @@ FILE_PATH = "./.program_pid_list.yml"
 def activate_program(program_name, program_command)
   program_pid = find_if_open program_name
   if program_pid
-    puts 'pid'
     bring_to_top program_pid
   else
-    puts 'no pid'
     program_pid = execute program_command
     store_pid program_name, program_pid
   end
