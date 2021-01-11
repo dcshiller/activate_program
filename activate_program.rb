@@ -1,7 +1,6 @@
 #! /bin/ruby
 
 require 'yaml'
-require 'byebug'
 FILE_PATH = "#{File.expand_path(File.dirname(__FILE__))}/.program_wid_list.yml"
 
 def activate_program(program_name, program_command)
@@ -17,13 +16,13 @@ end
 def find_if_open(program_name)
   program_wid = find_in_file program_name
   return nil unless program_wid
-  is_active = verify_active program_wid
-  if is_active then program_wid else nil end
+  does_exist = verify_exists program_wid
+  if does_exist then program_wid else nil end
 end
 
-def verify_active(program_wid)
-  r = `wmctrl -l | awk '$1==\"#{program_wid}\" {print \"true\"}'`.chomp
-  r == 'true'
+def verify_exists(program_wid)
+  wid_exists = `wmctrl -l | awk '$1==\"#{program_wid}\" {print \"true\"}'`.chomp
+  wid_exists == 'true'
 end
 
 def find_in_file(program_name)
@@ -53,6 +52,7 @@ end
 
 def execute(program_command)
   `#{program_command} > /dev/null`.chomp
+  # assume last window is wid
   `wmctrl -l | awk '{print $1}'`.split("\n").last
 end
 
