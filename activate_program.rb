@@ -4,7 +4,7 @@ require 'yaml'
 FILE_PATH = "#{File.expand_path(File.dirname(__FILE__))}/.program_wid_list.yml"
 
 def activate_program(program_name, program_command)
-  program_wid = find_if_open program_name
+  program_wid = get_wid_if_open program_name
   if program_wid
     bring_to_top program_wid
   else
@@ -13,21 +13,20 @@ def activate_program(program_name, program_command)
   end
 end
 
-def find_if_open(program_name)
-  program_wid = find_in_file program_name
-  return nil unless program_wid
-  does_exist = verify_exists program_wid
-  if does_exist then program_wid else nil end
+def get_wid_if_open(program_name)
+  program_wid = retrieve_wid_from_file program_name
+  return nil unless exists? program_wid
+  program_wid
 end
 
-def verify_exists(program_wid)
+def exists?(program_wid)
+  return unless program_wid
   wid_exists = `wmctrl -l | awk '$1==\"#{program_wid}\" {print \"true\"}'`.chomp
   wid_exists == 'true'
 end
 
-def find_in_file(program_name)
+def retrieve_wid_from_file(program_name)
   if File.exist? FILE_PATH
-    file = File.read(FILE_PATH)
     yml = YAML.load(File.read FILE_PATH)
     yml[program_name]
   else
