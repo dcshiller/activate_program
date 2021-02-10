@@ -50,9 +50,11 @@ def bring_to_top(program_wid)
 end
 
 def execute(program_command)
+  existing_windows = `wmctrl -l | awk '{print $1}'`.split("\n")
   `#{program_command} > /dev/null`.chomp
-  # assume last window is wid
-  `wmctrl -l | awk '{print $1}'`.split("\n").last
+  new_windows = `wmctrl -l | awk '{print $1}'`.split("\n")
+  # assume only new window is wid
+  (new_windows - existing_windows).last
 end
 
 activate_program ARGV[0], ARGV[1]
